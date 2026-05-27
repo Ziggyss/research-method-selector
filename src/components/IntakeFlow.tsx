@@ -161,6 +161,10 @@ export function IntakeFlow({ initialAnswers, initialStep }: IntakeFlowProps) {
   const [recommendation, setRecommendation] = useState<Recommendation | null>(null);
 
   useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentStep]);
+
+  useEffect(() => {
     if (Object.values(errors).some(Boolean)) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
