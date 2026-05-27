@@ -272,12 +272,33 @@ export function ExportActions({ recommendation, researcherName = '', researcherE
   const [copiedPlan, setCopiedPlan] = useState(false);
   const [copiedCondens, setCopiedCondens] = useState(false);
   const [copiedConsentLink, setCopiedConsentLink] = useState(false);
+  const [shortUrl, setShortUrl] = useState<string | null>(null);
+  const [shortening, setShortening] = useState(false);
+  const [shortenError, setShortenError] = useState(false);
   const [condensGuideOpen, setCondensGuideOpen] = useState(false);
 
   const copyText = async (text: string, setCopied: (v: boolean) => void) => {
     await navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const shortenUrl = async (url: string) => {
+    setShortening(true);
+    setShortenError(false);
+    try {
+      const res = await fetch(`https://is.gd/create.php?format=json&url=${encodeURIComponent(url)}`);
+      const data = await res.json();
+      if (data.shorturl) {
+        setShortUrl(data.shorturl);
+      } else {
+        setShortenError(true);
+      }
+    } catch {
+      setShortenError(true);
+    } finally {
+      setShortening(false);
+    }
   };
 
   const downloadFile = (content: string, filename: string, mimeType: string) => {
@@ -335,24 +356,32 @@ export function ExportActions({ recommendation, researcherName = '', researcherE
 
       {/* Consent link */}
       <div className="card">
-        <div className="flex items-start justify-between gap-3 mb-2">
-          <div>
-            <h3 className="text-sm font-semibold text-charcoal">Consent form link</h3>
-            <p className="text-xs text-charcoal-muted mt-0.5">Share with participants so they can sign the consent form before their session</p>
-          </div>
-        </div>
+        <h3 className="text-sm font-semibold text-charcoal mb-0.5">Consent form link</h3>
+        <p className="text-xs text-charcoal-muted mb-3">Share with participants so they can sign the consent form before their session</p>
         <div className="bg-warm-50 border border-warm-200 rounded-lg px-3 py-2 mb-3 font-mono text-xs text-charcoal-muted break-all select-all">
-          {buildConsentUrl(recommendation, researcherName, researcherEmail)}
+          {shortUrl ?? buildConsentUrl(recommendation, researcherName, researcherEmail)}
         </div>
         <div className="flex flex-wrap gap-2">
           <button
-            onClick={() => copyText(buildConsentUrl(recommendation, researcherName, researcherEmail), setCopiedConsentLink)}
+            onClick={() => copyText(shortUrl ?? buildConsentUrl(recommendation, researcherName, researcherEmail), setCopiedConsentLink)}
             className="btn-secondary inline-flex items-center gap-1.5 text-sm py-2"
           >
             {copiedConsentLink ? <CheckCheck size={14} className="text-green-500" /> : <Link size={14} />}
-            {copiedConsentLink ? 'Copied!' : 'Copy consent link'}
+            {copiedConsentLink ? 'Copied!' : 'Copy link'}
           </button>
+          {!shortUrl && (
+            <button
+              onClick={() => shortenUrl(buildConsentUrl(recommendation, researcherName, researcherEmail))}
+              disabled={shortening}
+              className="btn-secondary inline-flex items-center gap-1.5 text-sm py-2 disabled:opacity-50"
+            >
+              {shortening ? 'Shortening…' : 'Shorten URL'}
+            </button>
+          )}
         </div>
+        {shortenError && (
+          <p className="text-xs text-red-600 mt-2">Could not shorten URL — copy the full link instead.</p>
+        )}
         {(!researcherName || !researcherEmail) && (
           <p className="text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2 mt-3">
             Add your name and email in the Constraints step to include your contact details in the consent form.
