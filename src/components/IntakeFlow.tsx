@@ -256,6 +256,31 @@ export function IntakeFlow({ initialAnswers, initialStep }: IntakeFlowProps) {
             <div className="mb-6">
               <h2 className="text-2xl font-semibold text-charcoal mb-1">What decision needs to be made?</h2>
             </div>
+            <QuestionCard question="Who are you?">
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-charcoal mb-1.5">Your name</label>
+                  <input
+                    type="text"
+                    className="input-field text-sm"
+                    placeholder="e.g. Lisa Wilton"
+                    value={answers.researcherName}
+                    onChange={(e) => update('researcherName', e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-charcoal mb-1.5">Your email</label>
+                  <input
+                    type="email"
+                    className="input-field text-sm"
+                    placeholder="e.g. lisa.wilton@oneadvanced.com"
+                    value={answers.researcherEmail}
+                    onChange={(e) => update('researcherEmail', e.target.value)}
+                  />
+                </div>
+              </div>
+              <p className="text-xs text-charcoal-muted mt-2">Used to pre-fill consent forms sent to participants. Optional, but recommended.</p>
+            </QuestionCard>
             <QuestionCard
               question="What decision are you trying to make?"
               whyItMatters="The decision determines what kind of evidence is needed. 'We need to improve things' is not a decision — 'We need to decide whether to prioritise building X' is."
@@ -402,31 +427,6 @@ export function IntakeFlow({ initialAnswers, initialStep }: IntakeFlowProps) {
             <div className="mb-6">
               <h2 className="text-2xl font-semibold text-charcoal mb-1">What constraints do you have?</h2>
             </div>
-            <QuestionCard question="Who is leading this research?">
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-charcoal mb-1.5">Your name</label>
-                  <input
-                    type="text"
-                    className="input-field text-sm"
-                    placeholder="e.g. Lisa Wilton"
-                    value={answers.researcherName}
-                    onChange={(e) => update('researcherName', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-charcoal mb-1.5">Your email</label>
-                  <input
-                    type="email"
-                    className="input-field text-sm"
-                    placeholder="e.g. lisa.wilton@oneadvanced.com"
-                    value={answers.researcherEmail}
-                    onChange={(e) => update('researcherEmail', e.target.value)}
-                  />
-                </div>
-              </div>
-              <p className="text-xs text-charcoal-muted mt-2">Used to pre-fill consent forms sent to participants. Optional, but recommended.</p>
-            </QuestionCard>
             <QuestionCard
               question="Timeline and access"
               error={errors.timeline}
