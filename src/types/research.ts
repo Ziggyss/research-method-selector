@@ -151,7 +151,7 @@ export interface StarterResearchPlan {
   timeline: string;
   risksAndMitigations: string[];
   openQuestions: string[];
-  planningChecklist: { item: string; highRiskOnly: boolean }[];
+  planningChecklist: { item: string; highRiskOnly: boolean; group: string }[];
   screeningSurvey: {
     intro: string;
     questions: { question: string; type: 'single' | 'multi' | 'text' | 'yesno'; options?: string[]; screenerNote?: string }[];

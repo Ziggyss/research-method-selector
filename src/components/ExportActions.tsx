@@ -358,8 +358,10 @@ export function ExportActions({ recommendation, researcherName = '', researcherE
       <div className="card">
         <h3 className="text-sm font-semibold text-charcoal mb-0.5">Consent form link</h3>
         <p className="text-xs text-charcoal-muted mb-3">Share with participants so they can sign the consent form before their session</p>
-        <div className="bg-warm-50 border border-warm-200 rounded-lg px-3 py-2 mb-3 font-mono text-xs text-charcoal-muted break-all select-all">
-          {shortUrl ?? buildConsentUrl(recommendation, researcherName, researcherEmail)}
+        <div className="bg-warm-50 border border-warm-200 rounded-lg px-3 py-2 mb-3 font-mono text-xs text-charcoal-muted overflow-hidden">
+          <span className="block truncate select-all">
+            {shortUrl ?? buildConsentUrl(recommendation, researcherName, researcherEmail)}
+          </span>
         </div>
         <div className="flex flex-wrap gap-2">
           <button
