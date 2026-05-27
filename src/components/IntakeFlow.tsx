@@ -592,14 +592,12 @@ export function IntakeFlow({ initialAnswers, initialStep }: IntakeFlowProps) {
       />
       <div className="flex-1 min-w-0">
         {renderStep()}
-        {currentStep !== 'plan' && (
-          <StepNavigation
-            currentStep={currentStep}
-            onBack={handleBack}
-            onContinue={handleContinue}
-            canContinue={canContinue()}
-          />
-        )}
+        <StepNavigation
+          currentStep={currentStep}
+          onBack={handleBack}
+          onContinue={handleContinue}
+          canContinue={canContinue()}
+        />
       </div>
     </div>
   );

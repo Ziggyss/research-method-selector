@@ -41,15 +41,17 @@ export function StepNavigation({
         <ChevronLeft size={16} />
         Back
       </button>
-      <button
-        type="button"
-        onClick={onContinue}
-        disabled={!canContinue}
-        className="btn-primary flex items-center gap-1.5 text-sm"
-      >
-        {label}
-        {!isLast && <ChevronRight size={16} />}
-      </button>
+      {!isLast && (
+        <button
+          type="button"
+          onClick={onContinue}
+          disabled={!canContinue}
+          className="btn-primary flex items-center gap-1.5 text-sm"
+        >
+          {label}
+          <ChevronRight size={16} />
+        </button>
+      )}
     </div>
   );
 }
