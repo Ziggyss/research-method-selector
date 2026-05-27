@@ -109,6 +109,8 @@ export interface IntakeAnswers {
   prototypeAvailability: PrototypeAvailability | '';
   existingEvidence: ExistingEvidence[];
   additionalContext: string;
+  researcherName: string;
+  researcherEmail: string;
 }
 
 export type MethodCategory =

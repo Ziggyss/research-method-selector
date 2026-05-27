@@ -31,6 +31,8 @@ export const EXAMPLE_SCENARIOS: ExampleScenario[] = [
       prototypeAvailability: 'live_product',
       existingEvidence: ['analytics', 'support_tickets'],
       additionalContext: '',
+      researcherName: '',
+      researcherEmail: '',
     },
   },
   {
@@ -56,6 +58,8 @@ export const EXAMPLE_SCENARIOS: ExampleScenario[] = [
       prototypeAvailability: 'low_fidelity',
       existingEvidence: ['none'],
       additionalContext: '',
+      researcherName: '',
+      researcherEmail: '',
     },
   },
   {
@@ -81,6 +85,8 @@ export const EXAMPLE_SCENARIOS: ExampleScenario[] = [
       prototypeAvailability: 'high_fidelity',
       existingEvidence: ['previous_research'],
       additionalContext: '',
+      researcherName: '',
+      researcherEmail: '',
     },
   },
 ];

@@ -47,6 +47,8 @@ const EMPTY_ANSWERS: IntakeAnswers = {
   prototypeAvailability: '',
   existingEvidence: [],
   additionalContext: '',
+  researcherName: '',
+  researcherEmail: '',
 };
 
 function OptionalDetail({ placeholder, value, onChange }: {
@@ -88,7 +90,7 @@ function OptionalDetail({ placeholder, value, onChange }: {
 
 type PlanTab = 'plan' | 'guide' | 'bias';
 
-function PlanTabs({ recommendation }: { recommendation: NonNullable<ReturnType<typeof generateRecommendation>> }) {
+function PlanTabs({ recommendation, answers }: { recommendation: NonNullable<ReturnType<typeof generateRecommendation>>; answers: IntakeAnswers }) {
   const [tab, setTab] = useState<PlanTab>('plan');
 
   const tabs: { id: PlanTab; label: string }[] = [
@@ -125,7 +127,7 @@ function PlanTabs({ recommendation }: { recommendation: NonNullable<ReturnType<t
 
       {tab === 'plan' && (
         <>
-          <ExportActions recommendation={recommendation} />
+          <ExportActions recommendation={recommendation} researcherName={answers.researcherName} researcherEmail={answers.researcherEmail} />
           <div className="mt-5">
             <ResearchPlan plan={recommendation.starterPlan} />
           </div>
@@ -400,6 +402,31 @@ export function IntakeFlow({ initialAnswers, initialStep }: IntakeFlowProps) {
             <div className="mb-6">
               <h2 className="text-2xl font-semibold text-charcoal mb-1">What constraints do you have?</h2>
             </div>
+            <QuestionCard question="Who is leading this research?">
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-charcoal mb-1.5">Your name</label>
+                  <input
+                    type="text"
+                    className="input-field text-sm"
+                    placeholder="e.g. Lisa Wilton"
+                    value={answers.researcherName}
+                    onChange={(e) => update('researcherName', e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-charcoal mb-1.5">Your email</label>
+                  <input
+                    type="email"
+                    className="input-field text-sm"
+                    placeholder="e.g. lisa.wilton@oneadvanced.com"
+                    value={answers.researcherEmail}
+                    onChange={(e) => update('researcherEmail', e.target.value)}
+                  />
+                </div>
+              </div>
+              <p className="text-xs text-charcoal-muted mt-2">Used to pre-fill consent forms sent to participants. Optional, but recommended.</p>
+            </QuestionCard>
             <QuestionCard
               question="Timeline and access"
               error={errors.timeline}
@@ -542,7 +569,7 @@ export function IntakeFlow({ initialAnswers, initialStep }: IntakeFlowProps) {
 
       case 'plan':
         return recommendation ? (
-          <PlanTabs recommendation={recommendation} />
+          <PlanTabs recommendation={recommendation} answers={answers} />
         ) : null;
 
       default:
