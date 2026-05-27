@@ -127,9 +127,14 @@ function PlanTabs({ recommendation, answers }: { recommendation: NonNullable<Ret
 
       {tab === 'plan' && (
         <>
-          <ExportActions recommendation={recommendation} researcherName={answers.researcherName} researcherEmail={answers.researcherEmail} />
+          <ExportActions recommendation={recommendation} />
           <div className="mt-5">
-            <ResearchPlan plan={recommendation.starterPlan} />
+            <ResearchPlan
+              plan={recommendation.starterPlan}
+              recommendation={recommendation}
+              researcherName={answers.researcherName}
+              researcherEmail={answers.researcherEmail}
+            />
           </div>
         </>
       )}

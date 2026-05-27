@@ -4,6 +4,47 @@ import type { StarterResearchPlan } from '../types/research';
 
 interface ResearchPlanProps {
   plan: StarterResearchPlan;
+  recommendation: {
+    primaryMethod: { name: string };
+    suggestedDesign: { sessionLength: string };
+  };
+  researcherName?: string;
+  researcherEmail?: string;
+}
+
+function buildConsentUrl(plan: StarterResearchPlan, recommendation: ResearchPlanProps['recommendation'], researcherName: string, researcherEmail: string): string {
+  const base = `${window.location.origin}/consent`;
+  const params = new URLSearchParams({
+    study: plan.title,
+    method: recommendation.primaryMethod.name,
+    duration: recommendation.suggestedDesign.sessionLength,
+    aims: plan.objectives.filter(Boolean).slice(0, 3).join('; '),
+    ...(researcherName && { researcher: researcherName }),
+    ...(researcherEmail && { email: researcherEmail }),
+  });
+  return `${base}?${params.toString()}`;
+}
+
+function SectionGroup({ label, accent, children }: {
+  label: string;
+  accent: 'purple' | 'blue' | 'green' | 'amber' | 'teal';
+  children: React.ReactNode;
+}) {
+  const styles: Record<string, string> = {
+    purple: 'border-brand-purple bg-purple-50/70 text-brand-purple',
+    blue:   'border-blue-400 bg-blue-50/70 text-blue-700',
+    green:  'border-green-500 bg-green-50/70 text-green-700',
+    amber:  'border-amber-400 bg-amber-50/70 text-amber-700',
+    teal:   'border-teal-500 bg-teal-50/70 text-teal-700',
+  };
+  return (
+    <div className="space-y-3">
+      <div className={`border-l-4 pl-3 py-1.5 rounded-r-lg ${styles[accent]}`}>
+        <span className="text-xs font-bold uppercase tracking-widest">{label}</span>
+      </div>
+      {children}
+    </div>
+  );
 }
 
 function Section({ title, children, last }: { title: string; children: React.ReactNode; last?: boolean }) {
@@ -146,98 +187,118 @@ function outreachEmailText(plan: StarterResearchPlan): string {
 }
 
 
-export function ResearchPlan({ plan }: ResearchPlanProps) {
+export function ResearchPlan({ plan, recommendation, researcherName = '', researcherEmail = '' }: ResearchPlanProps) {
+  const [shortUrl, setShortUrl] = useState<string | null>(null);
+  const [shortening, setShortening] = useState(false);
+  const [shortenError, setShortenError] = useState(false);
+  const [copiedConsentLink, setCopiedConsentLink] = useState(false);
+
+  const copyText = async (text: string, setCopied: (v: boolean) => void) => {
+    await navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const shortenUrl = async (url: string) => {
+    setShortening(true);
+    setShortenError(false);
+    try {
+      const res = await fetch(`https://is.gd/create.php?format=json&url=${encodeURIComponent(url)}`);
+      const data = await res.json();
+      if (data.shorturl) setShortUrl(data.shorturl);
+      else setShortenError(true);
+    } catch { setShortenError(true); }
+    finally { setShortening(false); }
+  };
+
   return (
-    <div className="space-y-4">
-      {/* Title + background */}
-      <div className="card">
-        <h2 className="text-xl font-semibold text-charcoal mb-1">{plan.title}</h2>
-        <p className="text-sm text-charcoal-muted leading-relaxed">{plan.background}</p>
-      </div>
+    <div className="space-y-6">
 
-      {/* Decision, objectives, questions */}
-      <div className="card">
-        <Section title="Decision to support">
-          <ProseBlock text={plan.decision} />
-        </Section>
+      {/* Study brief */}
+      <SectionGroup label="Study brief" accent="purple">
+        <div className="card">
+          <h2 className="text-xl font-semibold text-charcoal mb-1">{plan.title}</h2>
+          <p className="text-sm text-charcoal-muted leading-relaxed">{plan.background}</p>
+        </div>
+        <div className="card">
+          <Section title="Decision to support">
+            <ProseBlock text={plan.decision} />
+          </Section>
+          <Section title="Research objectives">
+            <ListItems items={plan.objectives} />
+          </Section>
+          <Section title="Research questions" last>
+            <ol className="space-y-2">
+              {plan.researchQuestions.map((q, i) => (
+                <li key={i} className="text-sm text-charcoal flex gap-2.5 leading-relaxed bg-warm-50 border border-warm-100 rounded-lg px-3 py-2">
+                  <span className="text-charcoal-muted font-semibold flex-shrink-0">{i + 1}.</span>
+                  {q}
+                </li>
+              ))}
+            </ol>
+          </Section>
+        </div>
+      </SectionGroup>
 
-        <Section title="Research objectives">
-          <ListItems items={plan.objectives} />
-        </Section>
+      {/* Study design */}
+      <SectionGroup label="Study design" accent="blue">
+        <div className="card">
+          <Section title="Recommended method">
+            <ProseBlock text={plan.method} />
+          </Section>
+          <Section title="Participants">
+            <ProseBlock text={plan.participants} />
+          </Section>
+          <Section title="Recruitment considerations">
+            <ProseBlock text={plan.recruitmentConsiderations} />
+          </Section>
+          <Section title="Materials needed" last>
+            <ListItems items={plan.materialsNeeded} />
+          </Section>
+        </div>
+      </SectionGroup>
 
-        <Section title="Research questions" last>
-          <ol className="space-y-2">
-            {plan.researchQuestions.map((q, i) => (
-              <li key={i} className="text-sm text-charcoal flex gap-2.5 leading-relaxed bg-warm-50 border border-warm-100 rounded-lg px-3 py-2">
-                <span className="text-charcoal-muted font-semibold flex-shrink-0">{i + 1}.</span>
-                {q}
-              </li>
-            ))}
-          </ol>
-        </Section>
-      </div>
+      {/* Fieldwork */}
+      <SectionGroup label="Fieldwork" accent="green">
+        <div className="card">
+          <Section title="Session outline">
+            <ol className="space-y-2">
+              {plan.sessionOutline.map((item, i) => (
+                <li key={i} className="text-sm text-charcoal flex gap-2.5 leading-relaxed bg-warm-50 border border-warm-100 rounded-lg px-3 py-2">
+                  <span className="text-charcoal-muted font-semibold flex-shrink-0">{i + 1}.</span>
+                  {item}
+                </li>
+              ))}
+            </ol>
+          </Section>
+          <Section title="Data capture">
+            <ListItems items={plan.dataCapture} />
+          </Section>
+          <Section title="Analysis approach" last>
+            <ProseBlock text={plan.analysisApproach} />
+          </Section>
+        </div>
+      </SectionGroup>
 
-      {/* Method + participants */}
-      <div className="card">
-        <Section title="Recommended method">
-          <ProseBlock text={plan.method} />
-        </Section>
+      {/* Outcomes */}
+      <SectionGroup label="Outcomes" accent="amber">
+        <div className="card">
+          <Section title="Outputs">
+            <ListItems items={plan.outputs} />
+          </Section>
+          <Section title="Timeline">
+            <ProseBlock text={plan.timeline} />
+          </Section>
+          <Section title="Risks and mitigations">
+            <ListItems items={plan.risksAndMitigations} />
+          </Section>
+          <Section title="Open questions" last>
+            <ListItems items={plan.openQuestions} />
+          </Section>
+        </div>
+      </SectionGroup>
 
-        <Section title="Participants">
-          <ProseBlock text={plan.participants} />
-        </Section>
-
-        <Section title="Recruitment considerations">
-          <ProseBlock text={plan.recruitmentConsiderations} />
-        </Section>
-
-        <Section title="Materials needed" last>
-          <ListItems items={plan.materialsNeeded} />
-        </Section>
-      </div>
-
-      {/* Session design */}
-      <div className="card">
-        <Section title="Session outline">
-          <ol className="space-y-2">
-            {plan.sessionOutline.map((item, i) => (
-              <li key={i} className="text-sm text-charcoal flex gap-2.5 leading-relaxed bg-warm-50 border border-warm-100 rounded-lg px-3 py-2">
-                <span className="text-charcoal-muted font-semibold flex-shrink-0">{i + 1}.</span>
-                {item}
-              </li>
-            ))}
-          </ol>
-        </Section>
-
-        <Section title="Data capture">
-          <ListItems items={plan.dataCapture} />
-        </Section>
-
-        <Section title="Analysis approach" last>
-          <ProseBlock text={plan.analysisApproach} />
-        </Section>
-      </div>
-
-      {/* Outputs, timeline, risks */}
-      <div className="card">
-        <Section title="Outputs">
-          <ListItems items={plan.outputs} />
-        </Section>
-
-        <Section title="Timeline">
-          <ProseBlock text={plan.timeline} />
-        </Section>
-
-        <Section title="Risks and mitigations">
-          <ListItems items={plan.risksAndMitigations} />
-        </Section>
-
-        <Section title="Open questions" last>
-          <ListItems items={plan.openQuestions} />
-        </Section>
-      </div>
-
-      {/* Planning checklist */}
+      {/* Preparation */}
       <div className="card">
         <h4 className="text-xs font-semibold text-charcoal-muted uppercase tracking-wider mb-4">Planning checklist</h4>
         <div className="space-y-5">
@@ -259,115 +320,154 @@ export function ResearchPlan({ plan }: ResearchPlanProps) {
         </div>
       </div>
 
-      {/* Screening survey */}
-      <CollapsibleCard
-        title="Suggested screening survey"
-        badge="Recruitment"
-        copyText={screeningSurveyText(plan)}
-        copyLabel="Copy survey"
-      >
-        <div className="mb-4">
-          <p className="text-xs font-semibold text-charcoal-muted uppercase tracking-wider mb-2">Introduction text</p>
-          <p className="text-sm text-charcoal leading-relaxed whitespace-pre-line bg-warm-50 rounded-lg p-4 border border-warm-200">
-            {plan.screeningSurvey.intro}
-          </p>
-        </div>
-        <div>
-          <p className="text-xs font-semibold text-charcoal-muted uppercase tracking-wider mb-3">Questions</p>
-          <ol className="space-y-3">
-            {plan.screeningSurvey.questions.map((q, i) => (
-              <li key={i} className="border border-warm-200 rounded-xl p-4 bg-white">
-                <p className="text-sm font-medium text-charcoal mb-2">{i + 1}. {q.question}</p>
-                {q.options && (
-                  <ul className="space-y-1 mb-2">
-                    {q.options.map((o, j) => (
-                      <li key={j} className="text-sm text-charcoal-muted flex gap-2">
-                        <span className="text-warm-300">○</span> {o}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-                {q.type === 'yesno' && (
-                  <ul className="space-y-1 mb-2">
-                    <li className="text-sm text-charcoal-muted flex gap-2"><span className="text-warm-300">○</span> Yes</li>
-                    <li className="text-sm text-charcoal-muted flex gap-2"><span className="text-warm-300">○</span> No</li>
-                  </ul>
-                )}
-                {q.type === 'text' && (
-                  <p className="text-sm text-warm-400 italic mb-2">[Open text field]</p>
-                )}
-                {q.screenerNote && (
-                  <p className="text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2 mt-2">
-                    Screener note: {q.screenerNote}
-                  </p>
-                )}
-              </li>
-            ))}
-          </ol>
-        </div>
-      </CollapsibleCard>
-
-      {/* Outreach email */}
-      <CollapsibleCard
-        title="Suggested outreach email"
-        badge="Recruitment"
-        copyText={outreachEmailText(plan)}
-        copyLabel="Copy email"
-        extraActions={
-          <button
-            onClick={() => openInOutlook(plan)}
-            className="inline-flex items-center gap-1.5 text-xs font-medium text-charcoal-muted hover:text-charcoal border border-warm-200 hover:border-warm-400 bg-white px-3 py-1.5 rounded-lg transition-colors"
-          >
-            <Mail size={13} />
-            Open in Outlook
-          </button>
-        }
-      >
-        <div className="mb-3">
-          <p className="text-xs font-semibold text-charcoal-muted uppercase tracking-wider mb-1">Subject line</p>
-          <p className="text-sm text-charcoal font-medium bg-warm-50 border border-warm-200 rounded-lg px-4 py-2.5">
-            {plan.outreachEmail.subject}
-          </p>
-        </div>
-        <div>
-          <p className="text-xs font-semibold text-charcoal-muted uppercase tracking-wider mb-2">Email body</p>
-          <div className="text-sm text-charcoal leading-relaxed whitespace-pre-line bg-warm-50 rounded-lg p-4 border border-warm-200">
-            {plan.outreachEmail.body}
+      {/* Participant communications */}
+      <SectionGroup label="Participant communications" accent="teal">
+        {/* Consent link */}
+        <div className="card">
+          <h3 className="text-base font-semibold text-charcoal mb-0.5">Consent form link</h3>
+          <p className="text-xs text-charcoal-muted mb-3">Send this to participants before their session — opens a digital consent form pre-filled with study details</p>
+          <div className="bg-warm-50 border border-warm-200 rounded-lg px-3 py-2 mb-3 font-mono text-xs text-charcoal-muted overflow-hidden">
+            <span className="block truncate select-all">
+              {shortUrl ?? buildConsentUrl(plan, recommendation, researcherName, researcherEmail)}
+            </span>
           </div>
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => copyText(shortUrl ?? buildConsentUrl(plan, recommendation, researcherName, researcherEmail), setCopiedConsentLink)}
+              className="btn-secondary inline-flex items-center gap-1.5 text-sm py-2"
+            >
+              {copiedConsentLink ? <CheckCheck size={14} className="text-green-500" /> : <Copy size={14} />}
+              {copiedConsentLink ? 'Copied!' : 'Copy link'}
+            </button>
+            {!shortUrl && (
+              <button
+                onClick={() => shortenUrl(buildConsentUrl(plan, recommendation, researcherName, researcherEmail))}
+                disabled={shortening}
+                className="btn-secondary inline-flex items-center gap-1.5 text-sm py-2 disabled:opacity-50"
+              >
+                {shortening ? 'Shortening…' : 'Shorten URL'}
+              </button>
+            )}
+          </div>
+          {shortenError && <p className="text-xs text-red-600 mt-2">Could not shorten URL — copy the full link instead.</p>}
+          {(!researcherName || !researcherEmail) && (
+            <p className="text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2 mt-3">
+              Add your name and email on step 1 to include your contact details in the consent form.
+            </p>
+          )}
         </div>
-        <p className="text-xs text-charcoal-muted mt-3">
-          Placeholders in [brackets] need to be filled in before sending. Review with your legal or comms team if sending externally.
-        </p>
-      </CollapsibleCard>
 
-      {/* Consent form */}
-      <CollapsibleCard
-        title="Suggested consent form"
-        badge="Ethics & data"
-        copyText={consentFormText(plan)}
-        copyLabel="Copy text"
-        extraActions={
-          <button
-            onClick={() => printConsentForm(plan)}
-            className="inline-flex items-center gap-1.5 text-xs font-medium text-charcoal-muted hover:text-charcoal border border-warm-200 hover:border-warm-400 bg-white px-3 py-1.5 rounded-lg transition-colors"
-          >
-            <Printer size={13} />
-            Print / PDF
-          </button>
-        }
-      >
-        <div className="space-y-4">
-          {plan.consentForm.sections.map((s, i) => (
-            <div key={i} className={i === plan.consentForm.sections.length - 1 ? 'bg-amber-50 border border-amber-100 rounded-xl p-4' : 'bg-warm-50 border border-warm-100 rounded-xl p-4'}>
-              <p className="text-xs font-semibold text-charcoal-muted uppercase tracking-wider mb-2">{s.heading}</p>
-              <p className="text-sm text-charcoal leading-relaxed whitespace-pre-line">{s.content}</p>
+        {/* Screening survey */}
+        <CollapsibleCard
+          title="Suggested screening survey"
+          badge="Recruitment"
+          copyText={screeningSurveyText(plan)}
+          copyLabel="Copy survey"
+        >
+          <div className="mb-4">
+            <p className="text-xs font-semibold text-charcoal-muted uppercase tracking-wider mb-2">Introduction text</p>
+            <p className="text-sm text-charcoal leading-relaxed whitespace-pre-line bg-warm-50 rounded-lg p-4 border border-warm-200">
+              {plan.screeningSurvey.intro}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-charcoal-muted uppercase tracking-wider mb-3">Questions</p>
+            <ol className="space-y-3">
+              {plan.screeningSurvey.questions.map((q, i) => (
+                <li key={i} className="border border-warm-200 rounded-xl p-4 bg-white">
+                  <p className="text-sm font-medium text-charcoal mb-2">{i + 1}. {q.question}</p>
+                  {q.options && (
+                    <ul className="space-y-1 mb-2">
+                      {q.options.map((o, j) => (
+                        <li key={j} className="text-sm text-charcoal-muted flex gap-2">
+                          <span className="text-warm-300">○</span> {o}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  {q.type === 'yesno' && (
+                    <ul className="space-y-1 mb-2">
+                      <li className="text-sm text-charcoal-muted flex gap-2"><span className="text-warm-300">○</span> Yes</li>
+                      <li className="text-sm text-charcoal-muted flex gap-2"><span className="text-warm-300">○</span> No</li>
+                    </ul>
+                  )}
+                  {q.type === 'text' && (
+                    <p className="text-sm text-warm-400 italic mb-2">[Open text field]</p>
+                  )}
+                  {q.screenerNote && (
+                    <p className="text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2 mt-2">
+                      Screener note: {q.screenerNote}
+                    </p>
+                  )}
+                </li>
+              ))}
+            </ol>
+          </div>
+        </CollapsibleCard>
+
+        {/* Outreach email */}
+        <CollapsibleCard
+          title="Suggested outreach email"
+          badge="Recruitment"
+          copyText={outreachEmailText(plan)}
+          copyLabel="Copy email"
+          extraActions={
+            <button
+              onClick={() => openInOutlook(plan)}
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-charcoal-muted hover:text-charcoal border border-warm-200 hover:border-warm-400 bg-white px-3 py-1.5 rounded-lg transition-colors"
+            >
+              <Mail size={13} />
+              Open in Outlook
+            </button>
+          }
+        >
+          <div className="mb-3">
+            <p className="text-xs font-semibold text-charcoal-muted uppercase tracking-wider mb-1">Subject line</p>
+            <p className="text-sm text-charcoal font-medium bg-warm-50 border border-warm-200 rounded-lg px-4 py-2.5">
+              {plan.outreachEmail.subject}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-charcoal-muted uppercase tracking-wider mb-2">Email body</p>
+            <div className="text-sm text-charcoal leading-relaxed whitespace-pre-line bg-warm-50 rounded-lg p-4 border border-warm-200">
+              {plan.outreachEmail.body}
             </div>
-          ))}
-        </div>
-        <p className="text-xs text-charcoal-muted mt-4 border-t border-warm-100 pt-3">
-          This is a starting point only. Always review consent forms with your legal, data protection, or ethics team before use.
-        </p>
-      </CollapsibleCard>
+          </div>
+          <p className="text-xs text-charcoal-muted mt-3">
+            Placeholders in [brackets] need to be filled in before sending. Review with your legal or comms team if sending externally.
+          </p>
+        </CollapsibleCard>
+
+        {/* Consent form */}
+        <CollapsibleCard
+          title="Suggested consent form"
+          badge="Ethics & data"
+          copyText={consentFormText(plan)}
+          copyLabel="Copy text"
+          extraActions={
+            <button
+              onClick={() => printConsentForm(plan)}
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-charcoal-muted hover:text-charcoal border border-warm-200 hover:border-warm-400 bg-white px-3 py-1.5 rounded-lg transition-colors"
+            >
+              <Printer size={13} />
+              Print / PDF
+            </button>
+          }
+        >
+          <div className="space-y-4">
+            {plan.consentForm.sections.map((s, i) => (
+              <div key={i} className={i === plan.consentForm.sections.length - 1 ? 'bg-amber-50 border border-amber-100 rounded-xl p-4' : 'bg-warm-50 border border-warm-100 rounded-xl p-4'}>
+                <p className="text-xs font-semibold text-charcoal-muted uppercase tracking-wider mb-2">{s.heading}</p>
+                <p className="text-sm text-charcoal leading-relaxed whitespace-pre-line">{s.content}</p>
+              </div>
+            ))}
+          </div>
+          <p className="text-xs text-charcoal-muted mt-4 border-t border-warm-100 pt-3">
+            This is a starting point only. Always review consent forms with your legal, data protection, or ethics team before use.
+          </p>
+        </CollapsibleCard>
+      </SectionGroup>
+
     </div>
   );
 }
