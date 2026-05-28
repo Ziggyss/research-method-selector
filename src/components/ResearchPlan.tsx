@@ -56,25 +56,48 @@ function Section({ title, children, last }: { title: string; children: React.Rea
   );
 }
 
-function ProseBlock({ text }: { text: string }) {
+function EditableProseBlock({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   return (
-    <p className="text-sm text-charcoal leading-relaxed bg-warm-50 border border-warm-200 rounded-xl px-4 py-3">
-      {text}
-    </p>
+    <textarea
+      className="w-full text-sm text-charcoal leading-relaxed bg-warm-50 border border-warm-200 rounded-xl px-4 py-3 resize-y min-h-[60px] focus:outline-none focus:border-brand-purple focus:ring-1 focus:ring-brand-purple transition-colors"
+      value={value}
+      onChange={e => onChange(e.target.value)}
+    />
   );
 }
 
-function ListItems({ items }: { items: string[] }) {
+function EditableListItems({ items, onChange }: { items: string[]; onChange: (items: string[]) => void }) {
   const filtered = items.filter(Boolean);
-  if (filtered.length === 0) return <p className="text-sm text-warm-400 italic">Not specified</p>;
+  const updateItem = (i: number, val: string) => {
+    const next = [...items];
+    next[i] = val;
+    onChange(next);
+  };
+  const removeItem = (i: number) => onChange(items.filter((_, idx) => idx !== i));
+  const addItem = () => onChange([...items, '']);
+  if (filtered.length === 0 && items.length === 0) {
+    return (
+      <button onClick={addItem} className="text-xs text-brand-purple hover:underline">+ Add item</button>
+    );
+  }
   return (
     <ul className="space-y-1.5">
-      {filtered.map((item, i) => (
-        <li key={i} className="text-sm text-charcoal flex gap-2 leading-relaxed bg-warm-50 border border-warm-100 rounded-lg px-3 py-2">
-          <span className="text-warm-400 flex-shrink-0 mt-0.5">—</span>
-          {item}
+      {items.map((item, i) => (
+        <li key={i} className="flex gap-2 items-start">
+          <textarea
+            className="flex-1 text-sm text-charcoal leading-relaxed bg-warm-50 border border-warm-100 rounded-lg px-3 py-2 resize-none focus:outline-none focus:border-brand-purple focus:ring-1 focus:ring-brand-purple transition-colors"
+            rows={2}
+            value={item}
+            onChange={e => updateItem(i, e.target.value)}
+          />
+          <button
+            onClick={() => removeItem(i)}
+            className="text-warm-300 hover:text-red-400 transition-colors mt-2 flex-shrink-0 text-lg leading-none"
+            title="Remove"
+          >×</button>
         </li>
       ))}
+      <button onClick={addItem} className="text-xs text-brand-purple hover:underline mt-1">+ Add item</button>
     </ul>
   );
 }
@@ -188,10 +211,15 @@ function outreachEmailText(plan: StarterResearchPlan): string {
 
 
 export function ResearchPlan({ plan, recommendation, researcherName = '', researcherEmail = '' }: ResearchPlanProps) {
+  const [editedPlan, setEditedPlan] = useState<StarterResearchPlan>(plan);
   const [shortUrl, setShortUrl] = useState<string | null>(null);
   const [shortening, setShortening] = useState(false);
   const [shortenError, setShortenError] = useState(false);
   const [copiedConsentLink, setCopiedConsentLink] = useState(false);
+
+  const updatePlan = <K extends keyof StarterResearchPlan>(key: K, value: StarterResearchPlan[K]) => {
+    setEditedPlan(prev => ({ ...prev, [key]: value }));
+  };
 
   const copyText = async (text: string, setCopied: (v: boolean) => void) => {
     await navigator.clipboard.writeText(text);
@@ -214,25 +242,48 @@ export function ResearchPlan({ plan, recommendation, researcherName = '', resear
   return (
     <div className="space-y-6">
 
+      <div className="flex items-center gap-2 text-xs text-charcoal-muted bg-warm-50 border border-warm-200 rounded-lg px-3 py-2">
+        <span className="text-brand-purple">✎</span>
+        All fields are editable — click any text to make changes
+      </div>
+
       {/* Study brief */}
       <SectionGroup label="Study brief" accent="purple">
         <div className="card">
-          <h2 className="text-xl font-semibold text-charcoal mb-1">{plan.title}</h2>
-          <p className="text-sm text-charcoal-muted leading-relaxed">{plan.background}</p>
+          <input
+            type="text"
+            className="text-xl font-semibold text-charcoal bg-transparent border-b border-transparent hover:border-warm-300 focus:border-brand-purple focus:outline-none w-full transition-colors pb-0.5"
+            value={editedPlan.title}
+            onChange={e => updatePlan('title', e.target.value)}
+          />
+          <textarea
+            className="w-full text-sm text-charcoal-muted leading-relaxed bg-transparent border-b border-transparent hover:border-warm-200 focus:border-brand-purple focus:outline-none resize-y min-h-[48px] transition-colors"
+            value={editedPlan.background}
+            onChange={e => updatePlan('background', e.target.value)}
+          />
         </div>
         <div className="card">
           <Section title="Decision to support">
-            <ProseBlock text={plan.decision} />
+            <EditableProseBlock value={editedPlan.decision} onChange={v => updatePlan('decision', v)} />
           </Section>
           <Section title="Research objectives">
-            <ListItems items={plan.objectives} />
+            <EditableListItems items={editedPlan.objectives} onChange={v => updatePlan('objectives', v)} />
           </Section>
           <Section title="Research questions" last>
             <ol className="space-y-2">
-              {plan.researchQuestions.map((q, i) => (
-                <li key={i} className="text-sm text-charcoal flex gap-2.5 leading-relaxed bg-warm-50 border border-warm-100 rounded-lg px-3 py-2">
-                  <span className="text-charcoal-muted font-semibold flex-shrink-0">{i + 1}.</span>
-                  {q}
+              {editedPlan.researchQuestions.map((q, i) => (
+                <li key={i} className="flex gap-2.5 items-start bg-warm-50 border border-warm-100 rounded-lg px-3 py-2">
+                  <span className="text-charcoal-muted font-semibold flex-shrink-0 mt-1">{i + 1}.</span>
+                  <textarea
+                    className="flex-1 text-sm text-charcoal leading-relaxed resize-none bg-transparent focus:outline-none"
+                    rows={2}
+                    value={q}
+                    onChange={e => {
+                      const next = [...editedPlan.researchQuestions];
+                      next[i] = e.target.value;
+                      updatePlan('researchQuestions', next);
+                    }}
+                  />
                 </li>
               ))}
             </ol>
@@ -244,16 +295,16 @@ export function ResearchPlan({ plan, recommendation, researcherName = '', resear
       <SectionGroup label="Study design" accent="blue">
         <div className="card">
           <Section title="Recommended method">
-            <ProseBlock text={plan.method} />
+            <EditableProseBlock value={editedPlan.method} onChange={v => updatePlan('method', v)} />
           </Section>
           <Section title="Participants">
-            <ProseBlock text={plan.participants} />
+            <EditableProseBlock value={editedPlan.participants} onChange={v => updatePlan('participants', v)} />
           </Section>
           <Section title="Recruitment considerations">
-            <ProseBlock text={plan.recruitmentConsiderations} />
+            <EditableProseBlock value={editedPlan.recruitmentConsiderations} onChange={v => updatePlan('recruitmentConsiderations', v)} />
           </Section>
           <Section title="Materials needed" last>
-            <ListItems items={plan.materialsNeeded} />
+            <EditableListItems items={editedPlan.materialsNeeded} onChange={v => updatePlan('materialsNeeded', v)} />
           </Section>
         </div>
       </SectionGroup>
@@ -263,19 +314,28 @@ export function ResearchPlan({ plan, recommendation, researcherName = '', resear
         <div className="card">
           <Section title="Session outline">
             <ol className="space-y-2">
-              {plan.sessionOutline.map((item, i) => (
-                <li key={i} className="text-sm text-charcoal flex gap-2.5 leading-relaxed bg-warm-50 border border-warm-100 rounded-lg px-3 py-2">
-                  <span className="text-charcoal-muted font-semibold flex-shrink-0">{i + 1}.</span>
-                  {item}
+              {editedPlan.sessionOutline.map((item, i) => (
+                <li key={i} className="flex gap-2.5 items-start bg-warm-50 border border-warm-100 rounded-lg px-3 py-2">
+                  <span className="text-charcoal-muted font-semibold flex-shrink-0 mt-1">{i + 1}.</span>
+                  <textarea
+                    className="flex-1 text-sm text-charcoal leading-relaxed resize-none bg-transparent focus:outline-none"
+                    rows={2}
+                    value={item}
+                    onChange={e => {
+                      const next = [...editedPlan.sessionOutline];
+                      next[i] = e.target.value;
+                      updatePlan('sessionOutline', next);
+                    }}
+                  />
                 </li>
               ))}
             </ol>
           </Section>
           <Section title="Data capture">
-            <ListItems items={plan.dataCapture} />
+            <EditableListItems items={editedPlan.dataCapture} onChange={v => updatePlan('dataCapture', v)} />
           </Section>
           <Section title="Analysis approach" last>
-            <ProseBlock text={plan.analysisApproach} />
+            <EditableProseBlock value={editedPlan.analysisApproach} onChange={v => updatePlan('analysisApproach', v)} />
           </Section>
         </div>
       </SectionGroup>
@@ -284,16 +344,16 @@ export function ResearchPlan({ plan, recommendation, researcherName = '', resear
       <SectionGroup label="Outcomes" accent="amber">
         <div className="card">
           <Section title="Outputs">
-            <ListItems items={plan.outputs} />
+            <EditableListItems items={editedPlan.outputs} onChange={v => updatePlan('outputs', v)} />
           </Section>
           <Section title="Timeline">
-            <ProseBlock text={plan.timeline} />
+            <EditableProseBlock value={editedPlan.timeline} onChange={v => updatePlan('timeline', v)} />
           </Section>
           <Section title="Risks and mitigations">
-            <ListItems items={plan.risksAndMitigations} />
+            <EditableListItems items={editedPlan.risksAndMitigations} onChange={v => updatePlan('risksAndMitigations', v)} />
           </Section>
           <Section title="Open questions" last>
-            <ListItems items={plan.openQuestions} />
+            <EditableListItems items={editedPlan.openQuestions} onChange={v => updatePlan('openQuestions', v)} />
           </Section>
         </div>
       </SectionGroup>
@@ -302,13 +362,13 @@ export function ResearchPlan({ plan, recommendation, researcherName = '', resear
       <div className="card">
         <h4 className="text-xs font-semibold text-charcoal-muted uppercase tracking-wider mb-4">Planning checklist</h4>
         <div className="space-y-5">
-          {Array.from(new Set(plan.planningChecklist.map((c) => c.group))).map((group) => (
+          {Array.from(new Set(editedPlan.planningChecklist.map((c) => c.group))).map((group) => (
             <div key={group}>
               <p className={`text-xs font-semibold mb-2 ${group === 'Regulated / high-risk' ? 'text-amber-700' : 'text-charcoal'}`}>
                 {group}
               </p>
               <ul className="space-y-1.5">
-                {plan.planningChecklist.filter((c) => c.group === group).map((item, i) => (
+                {editedPlan.planningChecklist.filter((c) => c.group === group).map((item, i) => (
                   <li key={i} className={`flex items-start gap-2.5 rounded-lg px-3 py-2 ${group === 'Regulated / high-risk' ? 'bg-amber-50 border border-amber-100' : 'bg-warm-50 border border-warm-100'}`}>
                     <Square size={13} className={`flex-shrink-0 mt-0.5 ${group === 'Regulated / high-risk' ? 'text-amber-400' : 'text-warm-300'}`} />
                     <span className="text-sm text-charcoal">{item.item}</span>
@@ -361,19 +421,19 @@ export function ResearchPlan({ plan, recommendation, researcherName = '', resear
         <CollapsibleCard
           title="Suggested screening survey"
           badge="Recruitment"
-          copyText={screeningSurveyText(plan)}
+          copyText={screeningSurveyText(editedPlan)}
           copyLabel="Copy survey"
         >
           <div className="mb-4">
             <p className="text-xs font-semibold text-charcoal-muted uppercase tracking-wider mb-2">Introduction text</p>
             <p className="text-sm text-charcoal leading-relaxed whitespace-pre-line bg-warm-50 rounded-lg p-4 border border-warm-200">
-              {plan.screeningSurvey.intro}
+              {editedPlan.screeningSurvey.intro}
             </p>
           </div>
           <div>
             <p className="text-xs font-semibold text-charcoal-muted uppercase tracking-wider mb-3">Questions</p>
             <ol className="space-y-3">
-              {plan.screeningSurvey.questions.map((q, i) => (
+              {editedPlan.screeningSurvey.questions.map((q, i) => (
                 <li key={i} className="border border-warm-200 rounded-xl p-4 bg-white">
                   <p className="text-sm font-medium text-charcoal mb-2">{i + 1}. {q.question}</p>
                   {q.options && (
@@ -409,11 +469,11 @@ export function ResearchPlan({ plan, recommendation, researcherName = '', resear
         <CollapsibleCard
           title="Suggested outreach email"
           badge="Recruitment"
-          copyText={outreachEmailText(plan)}
+          copyText={outreachEmailText(editedPlan)}
           copyLabel="Copy email"
           extraActions={
             <button
-              onClick={() => openInOutlook(plan)}
+              onClick={() => openInOutlook(editedPlan)}
               className="inline-flex items-center gap-1.5 text-xs font-medium text-charcoal-muted hover:text-charcoal border border-warm-200 hover:border-warm-400 bg-white px-3 py-1.5 rounded-lg transition-colors"
             >
               <Mail size={13} />
@@ -424,13 +484,13 @@ export function ResearchPlan({ plan, recommendation, researcherName = '', resear
           <div className="mb-3">
             <p className="text-xs font-semibold text-charcoal-muted uppercase tracking-wider mb-1">Subject line</p>
             <p className="text-sm text-charcoal font-medium bg-warm-50 border border-warm-200 rounded-lg px-4 py-2.5">
-              {plan.outreachEmail.subject}
+              {editedPlan.outreachEmail.subject}
             </p>
           </div>
           <div>
             <p className="text-xs font-semibold text-charcoal-muted uppercase tracking-wider mb-2">Email body</p>
             <div className="text-sm text-charcoal leading-relaxed whitespace-pre-line bg-warm-50 rounded-lg p-4 border border-warm-200">
-              {plan.outreachEmail.body}
+              {editedPlan.outreachEmail.body}
             </div>
           </div>
           <p className="text-xs text-charcoal-muted mt-3">
@@ -442,11 +502,11 @@ export function ResearchPlan({ plan, recommendation, researcherName = '', resear
         <CollapsibleCard
           title="Suggested consent form"
           badge="Ethics & data"
-          copyText={consentFormText(plan)}
+          copyText={consentFormText(editedPlan)}
           copyLabel="Copy text"
           extraActions={
             <button
-              onClick={() => printConsentForm(plan)}
+              onClick={() => printConsentForm(editedPlan)}
               className="inline-flex items-center gap-1.5 text-xs font-medium text-charcoal-muted hover:text-charcoal border border-warm-200 hover:border-warm-400 bg-white px-3 py-1.5 rounded-lg transition-colors"
             >
               <Printer size={13} />
@@ -455,8 +515,8 @@ export function ResearchPlan({ plan, recommendation, researcherName = '', resear
           }
         >
           <div className="space-y-4">
-            {plan.consentForm.sections.map((s, i) => (
-              <div key={i} className={i === plan.consentForm.sections.length - 1 ? 'bg-amber-50 border border-amber-100 rounded-xl p-4' : 'bg-warm-50 border border-warm-100 rounded-xl p-4'}>
+            {editedPlan.consentForm.sections.map((s, i) => (
+              <div key={i} className={i === editedPlan.consentForm.sections.length - 1 ? 'bg-amber-50 border border-amber-100 rounded-xl p-4' : 'bg-warm-50 border border-warm-100 rounded-xl p-4'}>
                 <p className="text-xs font-semibold text-charcoal-muted uppercase tracking-wider mb-2">{s.heading}</p>
                 <p className="text-sm text-charcoal leading-relaxed whitespace-pre-line">{s.content}</p>
               </div>

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, ChevronLeft } from 'lucide-react';
 import type { IntakeAnswers, FlowStep, Recommendation } from '../types/research';
 import { Stepper } from './Stepper';
 import { QuestionCard } from './QuestionCard';
@@ -90,7 +90,7 @@ function OptionalDetail({ placeholder, value, onChange }: {
 
 type PlanTab = 'plan' | 'guide' | 'bias';
 
-function PlanTabs({ recommendation, answers }: { recommendation: NonNullable<ReturnType<typeof generateRecommendation>>; answers: IntakeAnswers }) {
+function PlanTabs({ recommendation, answers, onBack }: { recommendation: NonNullable<ReturnType<typeof generateRecommendation>>; answers: IntakeAnswers; onBack: () => void }) {
   const [tab, setTab] = useState<PlanTab>('plan');
 
   const tabs: { id: PlanTab; label: string }[] = [
@@ -102,9 +102,16 @@ function PlanTabs({ recommendation, answers }: { recommendation: NonNullable<Ret
   return (
     <div>
       <div className="mb-6">
+        <button
+          onClick={onBack}
+          className="flex items-center gap-1.5 text-sm text-charcoal-muted hover:text-charcoal transition-colors mb-4"
+        >
+          <ChevronLeft size={15} />
+          Back to recommendation
+        </button>
         <h2 className="text-2xl font-semibold text-charcoal mb-1">Starter research plan</h2>
         <p className="text-charcoal-muted">
-          A planning scaffold to get the research started. Edit, adapt, and expand based on your specific context.
+          All fields are editable — click any text to make changes before exporting.
         </p>
       </div>
 
@@ -232,10 +239,12 @@ export function IntakeFlow({ initialAnswers, initialStep }: IntakeFlowProps) {
       const rec = generateRecommendation(answers);
       setRecommendation(rec);
       setCurrentStep('recommendation');
-      if (!completedSteps.includes('recommendation')) {
-        setCompletedSteps((prev) => [...prev, 'constraints']);
-      }
+      setCompletedSteps((prev) => [...prev.filter(s => s !== 'constraints'), 'constraints']);
       return;
+    }
+
+    if (currentStep === 'recommendation') {
+      setCompletedSteps((prev) => prev.includes('plan') ? prev : [...prev, 'recommendation']);
     }
 
     const idx = FLOW_STEPS.indexOf(currentStep);
@@ -578,7 +587,7 @@ export function IntakeFlow({ initialAnswers, initialStep }: IntakeFlowProps) {
 
       case 'plan':
         return recommendation ? (
-          <PlanTabs recommendation={recommendation} answers={answers} />
+          <PlanTabs recommendation={recommendation} answers={answers} onBack={handleBack} />
         ) : null;
 
       default:
