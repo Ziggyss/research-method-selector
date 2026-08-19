@@ -1,12 +1,7 @@
 import { useState } from 'react';
-import emailjs from '@emailjs/browser';
 import { AlertCircle, CheckCircle2 } from 'lucide-react';
 
-// ─── Replace these with your EmailJS credentials ───────────────────────────
-const EMAILJS_SERVICE_ID = 'YOUR_SERVICE_ID';
-const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';
-const EMAILJS_PUBLIC_KEY = 'YOUR_PUBLIC_KEY';
-// ───────────────────────────────────────────────────────────────────────────
+const WEB3FORMS_ACCESS_KEY = '1ca86347-7888-4ce9-952c-0613dd0e57bd';
 
 type YesNo = 'yes' | 'no' | null;
 
@@ -160,20 +155,24 @@ export function ConsentPage() {
     ].join('\n');
 
     try {
-      await emailjs.send(
-        EMAILJS_SERVICE_ID,
-        EMAILJS_TEMPLATE_ID,
-        {
-          study_name: studyName || 'Not specified',
-          participant_name: participantName,
-          participant_email: participantEmail,
-          consent_summary: summary,
-          submitted_at: new Date().toLocaleString('en-GB'),
-        },
-        EMAILJS_PUBLIC_KEY
-      );
-      setSubmitState('success');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          access_key: WEB3FORMS_ACCESS_KEY,
+          subject: `Consent form submitted — ${studyName || 'Research study'}`,
+          from_name: participantName,
+          replyto: participantEmail,
+          message: summary,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSubmitState('success');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        setSubmitState('error');
+      }
     } catch {
       setSubmitState('error');
     }
