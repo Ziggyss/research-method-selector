@@ -283,7 +283,7 @@ export function ConsentPage() {
           </p>
           <p className="text-sm text-charcoal-muted">
             Our privacy policy is available at:{' '}
-            <a href="https://www.oneadvanced.com/privacy-policy/" target="_blank" rel="noopener noreferrer" className="text-charcoal underline underline-offset-2">www.oneadvanced.com/privacy-policy</a>
+            <a href="https://approvalmax.com/policy" target="_blank" rel="noopener noreferrer" className="text-charcoal underline underline-offset-2">approvalmax.com/policy</a>
           </p>
         </div>
 
@@ -421,7 +421,7 @@ export function ConsentPage() {
         )}
 
         <p className="text-xs text-warm-400 text-center mt-6 leading-relaxed">
-          ApprovalMax Ltd · <a href="https://www.oneadvanced.com/privacy-policy/" target="_blank" rel="noopener noreferrer" className="underline">Privacy policy</a> · <a href="mailto:dataprotectionoffice@oneadvanced.com" className="underline">Data Protection Office</a>
+          ApprovalMax Ltd · <a href="https://approvalmax.com/policy" target="_blank" rel="noopener noreferrer" className="underline">Privacy policy</a> · <a href="mailto:dataprotectionoffice@oneadvanced.com" className="underline">Data Protection Office</a>
         </p>
       </main>
     </div>

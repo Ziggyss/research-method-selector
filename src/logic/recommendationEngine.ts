@@ -587,7 +587,7 @@ function generateScreeningSurvey(primary: ResearchMethod, answers: IntakeAnswers
 
   const intro = `Thank you for your interest in taking part in research with ApprovalMax. We are looking for people to help us ${isUsabilityFocused ? 'test and give feedback on a design' : 'share their experience and perspective'} related to: ${decision.slice(0, 120)}${decision.length > 120 ? '...' : ''}
 
-At ApprovalMax, we build software that supports mission-critical work across healthcare, legal, education, social care, and the public sector. Your input helps us make better decisions about the products and services we build — and ultimately improves outcomes for the people who use them every day.
+At ApprovalMax, we build approval workflow software that helps finance teams, accountants and bookkeepers control spend — from bills and purchase orders to expenses and payments — working alongside accounting systems like Xero, QuickBooks Online and NetSuite. Your input helps us make better decisions about the products and services we build — and ultimately makes financial approvals simpler for the people who use them every day.
 
 This short survey (2–3 minutes) helps us check whether you match the profile we are looking for. We will contact suitable participants within [X] working days to explain more and arrange a session.`;
 
@@ -601,17 +601,15 @@ This short survey (2–3 minutes) helps us check whether you match the profile w
       question: 'Which of the following best describes the sector you work in?',
       type: 'single',
       options: [
-        'NHS or wider healthcare',
-        'Social care',
-        'Legal services',
-        'Education',
-        'Local or central government',
-        'Housing',
-        'Finance or professional services',
-        'Private sector (other)',
+        'Accounting or bookkeeping practice',
+        'Small business (fewer than 50 employees)',
+        'Mid-sized business (50–499 employees)',
+        'Large organisation (500+ employees)',
+        'Not-for-profit or charity',
+        'Public sector',
         'Other',
       ],
-      screenerNote: 'ApprovalMax serves regulated and public sector markets — filter for the specific sector relevant to this research. Adjust options as needed.',
+      screenerNote: 'ApprovalMax serves finance teams in businesses of all sizes, as well as the accounting and bookkeeping practices that support them — filter for the organisation type relevant to this research. Adjust options as needed.',
     },
     {
       question: isUsabilityFocused
@@ -669,7 +667,7 @@ function generateOutreachEmail(primary: ResearchMethod, answers: IntakeAnswers):
 
 I'm reaching out from the research team at ApprovalMax. We're conducting research to help us better understand [brief context related to: ${decision.slice(0, 80)}], and we'd welcome your perspective.
 
-We build software that supports mission-critical work across sectors like healthcare, legal, education, and social care — and the insight we gather from people doing this work every day is what helps us improve it. Based on [how we found you / your response to our screener], your experience seems like a great fit for what we're exploring.
+We build approval workflow software that helps finance teams, accountants and bookkeepers manage bills, purchase orders, expenses and payments — and the insight we gather from people doing this work every day is what helps us improve it. Based on [how we found you / your response to our screener], your experience seems like a great fit for what we're exploring.
 
 What's involved:
 — A ${sessionLength} ${methodLabel} with one of our researchers
@@ -694,7 +692,7 @@ ApprovalMax
 [Phone number — optional]
 
 ---
-This research is being conducted by ApprovalMax Ltd. Your participation is entirely voluntary. Any data collected will be handled in accordance with ApprovalMax's privacy policy: https://www.oneadvanced.com/privacy-policy/. If you have any questions about how your data will be used, please contact [research team email].`;
+This research is being conducted by ApprovalMax Ltd. Your participation is entirely voluntary. Any data collected will be handled in accordance with ApprovalMax's privacy policy: https://approvalmax.com/policy. If you have any questions about how your data will be used, please contact [research team email].`;
 
   return { subject, body };
 }
@@ -710,7 +708,7 @@ function generateConsentForm(primary: ResearchMethod, answers: IntakeAnswers): S
       heading: 'About this research',
       content: `This research is being conducted by ApprovalMax Ltd to help us improve our products and services. Specifically, we are researching: ${decision.slice(0, 120)}${decision.length > 120 ? '...' : ''}
 
-ApprovalMax builds software that supports mission-critical work in healthcare, legal, education, social care, and the public sector. The insight we gather from participants like you directly informs how we design and develop software that makes a real difference to people's working lives.
+ApprovalMax builds approval workflow software that helps finance teams, accountants and bookkeepers control spend and approve bills, purchase orders, expenses and payments. The insight we gather from participants like you directly informs how we design and develop software that makes a real difference to people's working lives.
 
 The session will involve ${isUsabilityFocused ? 'trying out a design and sharing your thoughts as you go' : 'a conversation about your experience and how you approach [relevant tasks]'}. The session will last approximately [session length].
 
@@ -726,7 +724,7 @@ ${isRegulated ? 'For regulatory or compliance purposes, some session data may ne
 
 Data will be stored securely by ApprovalMax in accordance with UK GDPR and our data retention policy, and deleted after [X months / as specified in our retention schedule]. You can request access to or deletion of your data at any time by contacting our research team at [research team email].
 
-For more information about how ApprovalMax handles personal data, see our privacy policy: https://www.oneadvanced.com/privacy-policy/`,
+For more information about how ApprovalMax handles personal data, see our privacy policy: https://approvalmax.com/policy`,
     },
     {
       heading: 'Your rights',
