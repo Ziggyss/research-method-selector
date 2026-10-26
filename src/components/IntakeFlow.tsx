@@ -291,7 +291,7 @@ export function IntakeFlow({ initialAnswers, initialStep }: IntakeFlowProps) {
                   <input
                     type="email"
                     className="input-field text-sm"
-                    placeholder="e.g. lisa.wilton@oneadvanced.com"
+                    placeholder="e.g. lisa.wilton@approvalmax.com"
                     value={answers.researcherEmail}
                     onChange={(e) => update('researcherEmail', e.target.value)}
                   />

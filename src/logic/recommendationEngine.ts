@@ -736,7 +736,7 @@ For more information about how ApprovalMax handles personal data, see our privac
 
 You do not have to answer any question you are not comfortable with. If you are uncertain about anything before or during the session, please ask.
 
-If you have concerns about how your data is being handled, you can contact ApprovalMax's Data Protection Officer at [DPO email / dpo@oneadvanced.com]. You also have the right to raise a concern with the Information Commissioner's Office (ICO) at ico.org.uk.`,
+If you have concerns about how your data is being handled, you can contact ApprovalMax's Data Protection Officer at [DPO email / dpo@approvalmax.com (email TBC)]. You also have the right to raise a concern with the Information Commissioner's Office (ICO) at ico.org.uk.`,
     },
     {
       heading: 'Consent declaration',

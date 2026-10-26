@@ -211,7 +211,7 @@ export function RecommendationSummary({ recommendation, onViewPlan }: Recommenda
           The ApprovalMax research team can help you refine your approach, review your plan, or get involved directly. If you're unsure where to start or want a second opinion, get in touch.
         </p>
         <a
-          href="mailto:lisa.wilton@oneadvanced.com?subject=Research support request"
+          href="mailto:lisa.wilton@approvalmax.com?subject=Research support request"
           className="btn-secondary inline-flex items-center gap-1.5 text-sm py-2"
         >
           Contact the research team

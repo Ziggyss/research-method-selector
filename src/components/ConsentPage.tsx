@@ -279,7 +279,7 @@ export function ConsentPage() {
           )}
           <p className="text-sm text-charcoal-muted mb-1">
             If you believe that your personal data has been misused or mishandled, you can contact the Data Protection Officer (DPO):{' '}
-            <a href="mailto:dataprotectionoffice@oneadvanced.com" className="text-charcoal underline underline-offset-2">dataprotectionoffice@oneadvanced.com</a>
+            <a href="mailto:dataprotectionoffice@approvalmax.com" className="text-charcoal underline underline-offset-2">dataprotectionoffice@approvalmax.com</a> (email TBC)
           </p>
           <p className="text-sm text-charcoal-muted">
             Our privacy policy is available at:{' '}
@@ -332,7 +332,7 @@ export function ConsentPage() {
               {researcherEmail
                 ? <>Contact <a href={`mailto:${researcherEmail}`} className="underline">{researcherEmail}</a>. </>
                 : 'Contact the research team. '}
-              Please note that we anonymise your data, which means we may no longer be able to identify which data belongs to you. If you feel your data is being mishandled, contact the Data Protection Office: <a href="mailto:dataprotectionoffice@oneadvanced.com" className="underline">dataprotectionoffice@oneadvanced.com</a>
+              Please note that we anonymise your data, which means we may no longer be able to identify which data belongs to you. If you feel your data is being mishandled, contact the Data Protection Office: <a href="mailto:dataprotectionoffice@approvalmax.com" className="underline">dataprotectionoffice@approvalmax.com</a> (email TBC)
             </p>
           </InfoBlock>
         </div>
@@ -421,7 +421,7 @@ export function ConsentPage() {
         )}
 
         <p className="text-xs text-warm-400 text-center mt-6 leading-relaxed">
-          ApprovalMax Ltd · <a href="https://approvalmax.com/policy" target="_blank" rel="noopener noreferrer" className="underline">Privacy policy</a> · <a href="mailto:dataprotectionoffice@oneadvanced.com" className="underline">Data Protection Office</a>
+          ApprovalMax Ltd · <a href="https://approvalmax.com/policy" target="_blank" rel="noopener noreferrer" className="underline">Privacy policy</a> · <a href="mailto:dataprotectionoffice@approvalmax.com" className="underline">Data Protection Office</a> (email TBC)
         </p>
       </main>
     </div>
