@@ -207,7 +207,7 @@ export function ConsentPage() {
         <div className="max-w-2xl mx-auto px-4 sm:px-6 h-14 flex items-center gap-3">
           <LogoMark />
           <div className="flex flex-col leading-none">
-            <span className="font-semibold text-charcoal text-sm">OneAdvanced</span>
+            <span className="font-semibold text-charcoal text-sm">ApprovalMax</span>
             <span className="text-[10px] text-charcoal-muted">Research &amp; UX</span>
           </div>
         </div>
@@ -263,7 +263,7 @@ export function ConsentPage() {
         <div className="card mb-1">
           <SectionHeading>Invitation to take part in research</SectionHeading>
           <p className="text-sm text-charcoal-muted leading-relaxed mb-4">
-            Advanced does regular research to improve our products and services and to ensure we're meeting user needs and providing a good user experience.
+            ApprovalMax does regular research to improve our products and services and to ensure we're meeting user needs and providing a good user experience.
           </p>
           <p className="text-sm text-charcoal mb-2">We invite you to take part in:</p>
           <ul className="list-disc list-inside text-sm text-charcoal space-y-1 mb-4 ml-1">
@@ -316,7 +316,7 @@ export function ConsentPage() {
         <div className="card mb-1">
           <SectionHeading>How we store and use your data</SectionHeading>
           <InfoBlock heading="Who is my data controller?">
-            <p>By ticking the boxes below, you consent to Advanced processing your personal data for the purposes of carrying out research to improve our products and services, to ensure we are meeting users' needs and providing a good user experience.</p>
+            <p>By ticking the boxes below, you consent to ApprovalMax processing your personal data for the purposes of carrying out research to improve our products and services, to ensure we are meeting users' needs and providing a good user experience.</p>
           </InfoBlock>
           <InfoBlock heading="How will my data be collected?">
             <p>The data that we collect will depend on what you consent to by ticking the boxes below. If you consent, we may collect audio or video recordings from the research session, and we may take notes. You have the right to choose not to be recorded.</p>
@@ -325,7 +325,7 @@ export function ConsentPage() {
             <p>Your data will be stored for a period of 2 years but we normally delete data much sooner than this. We will store your data within software called Condens on secure EU servers. The data has strict access controls — only a small number of researchers can access the data and we ensure it is password protected to keep it secure.</p>
           </InfoBlock>
           <InfoBlock heading="How will my data be shared?">
-            <p>We may pass your personal data on to other member firms of the Advanced group, third-party service providers contracted to Advanced (such as Condens), auditors and professional advisers, and law enforcement or regulatory agencies as required by law.</p>
+            <p>We may pass your personal data on to other member firms of the ApprovalMax group, third-party service providers contracted to ApprovalMax (such as Condens), auditors and professional advisers, and law enforcement or regulatory agencies as required by law.</p>
           </InfoBlock>
           <InfoBlock heading="How can I request a copy of my data or ask for it to be deleted?">
             <p>
@@ -393,7 +393,7 @@ export function ConsentPage() {
             <p className="text-xs font-semibold text-charcoal-muted uppercase tracking-wider mb-2">5. Taking part *</p>
             <YesNoField label="I understand what is being asked of me in this research project." value={choices.understands} onChange={set('understands')} required />
             <YesNoField label="I agree to take part in this research project." value={choices.agreesToParticipate} onChange={set('agreesToParticipate')} required />
-            <YesNoField label="I consent to being recontacted by this team or other teams in OneAdvanced for future research." value={choices.recontact} onChange={set('recontact')} />
+            <YesNoField label="I consent to being recontacted by this team or other teams in ApprovalMax for future research." value={choices.recontact} onChange={set('recontact')} />
           </div>
 
           {(errors.understands || errors.agree) && (
@@ -421,7 +421,7 @@ export function ConsentPage() {
         )}
 
         <p className="text-xs text-warm-400 text-center mt-6 leading-relaxed">
-          OneAdvanced Ltd · <a href="https://www.oneadvanced.com/privacy-policy/" target="_blank" rel="noopener noreferrer" className="underline">Privacy policy</a> · <a href="mailto:dataprotectionoffice@oneadvanced.com" className="underline">Data Protection Office</a>
+          ApprovalMax Ltd · <a href="https://www.oneadvanced.com/privacy-policy/" target="_blank" rel="noopener noreferrer" className="underline">Privacy policy</a> · <a href="mailto:dataprotectionoffice@oneadvanced.com" className="underline">Data Protection Office</a>
         </p>
       </main>
     </div>

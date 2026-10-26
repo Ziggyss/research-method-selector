@@ -54,7 +54,7 @@ export function Layout({ children, view, onNavigate }: LayoutProps) {
                 Research Method Selector
               </span>
               <span className="text-[10px] text-charcoal-muted tracking-wide font-normal">
-                OneAdvanced
+                ApprovalMax
               </span>
             </div>
           </button>

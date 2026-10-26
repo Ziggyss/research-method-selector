@@ -16,7 +16,7 @@ export function LandingPage({ scenarios, onStart, onLoadScenario }: LandingPageP
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium mb-6"
           style={{ background: 'linear-gradient(135deg, #ede9fe 0%, #fce7d6 100%)', color: '#7c3aed' }}>
           <span className="w-1.5 h-1.5 rounded-full bg-brand-purple inline-block" />
-          OneAdvanced Research
+          ApprovalMax Research
         </div>
 
         <h1 className="text-3xl sm:text-4xl font-semibold text-charcoal tracking-tight mb-3">

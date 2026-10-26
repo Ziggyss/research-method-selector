@@ -208,7 +208,7 @@ export function RecommendationSummary({ recommendation, onViewPlan }: Recommenda
           <h3 className="text-base font-semibold text-charcoal">Need more support?</h3>
         </div>
         <p className="text-sm text-charcoal-muted leading-relaxed mb-3">
-          The OneAdvanced research team can help you refine your approach, review your plan, or get involved directly. If you're unsure where to start or want a second opinion, get in touch.
+          The ApprovalMax research team can help you refine your approach, review your plan, or get involved directly. If you're unsure where to start or want a second opinion, get in touch.
         </p>
         <a
           href="mailto:lisa.wilton@oneadvanced.com?subject=Research support request"

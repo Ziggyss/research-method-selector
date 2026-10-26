@@ -548,7 +548,7 @@ export function IntakeFlow({ initialAnswers, initialStep }: IntakeFlowProps) {
                       rel="noopener noreferrer"
                       className="font-medium text-charcoal underline underline-offset-2 hover:text-charcoal-muted transition-colors"
                     >
-                      OneAdvanced research magazine in Condens
+                      ApprovalMax research magazine in Condens
                     </a>{' '}
                     — there may already be relevant findings from previous studies. If you find something useful, select it below so the recommendation takes it into account.
                   </p>
