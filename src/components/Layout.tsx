@@ -17,14 +17,7 @@ function LogoMark({ size = 28 }: { size?: number }) {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <defs>
-        <linearGradient id="logo-gradient" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#7c3aed" />
-          <stop offset="55%" stopColor="#a855f7" />
-          <stop offset="100%" stopColor="#f97316" />
-        </linearGradient>
-      </defs>
-      <rect width="28" height="28" rx="7" fill="url(#logo-gradient)" />
+      <rect width="28" height="28" rx="7" fill="#36cf8a" />
       {/* Stylised R / compass shape */}
       <path
         d="M7 20 L7 8 L16 8 C19 8 21 10 21 12.5 C21 15 19 17 16 17 L13 17 L20 20"
